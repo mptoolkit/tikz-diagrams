@@ -12,7 +12,7 @@
 %\tikzexternalize[prefix=tikz/]
 
 \usetikzlibrary{shapes.geometric}
-\usetikzlibrary{shapes.arrows}
+\usetikzlibrary{shapes.misc}
 % Base style for tensors.
 \tikzstyle{tensor}=[draw, inner sep=0pt, minimum size=10pt]
 % Used for drawing gaps in the tensor network diagram.
@@ -26,14 +26,18 @@
 % MPO tensors.
 \tikzstyle{wtensor}=[tensor]
 % Left-/right-orthogonal tensors.
+% Triangular style (unused).
 % Drawing left-/right-orthogonal tensors as isosceles triangles results in an
 % undesirable alignment, so we draw them as trapezia instead where one of the
 % parallel edges has zero length.
 % (For some reason, inner xsep=0pt produces an error here, so we just use 0.001pt.)
 %\tikzstyle{ltensor}=[tensor, isosceles triangle, shape border rotate=0, isosceles triangle apex angle=60]
 %\tikzstyle{rtensor}=[tensor, isosceles triangle, shape border rotate=180, isosceles triangle apex angle=60]
-\tikzstyle{ltensor}=[tensor, trapezium, shape border rotate=270, trapezium stretches, minimum width=20pt/sqrt(3), minimum height=10pt, inner xsep=0.001pt, shape border rotate=270]
-\tikzstyle{rtensor}=[tensor, trapezium, shape border rotate=270, trapezium stretches, minimum width=20pt/sqrt(3), minimum height=10pt, inner xsep=0.001pt, shape border rotate=90]
+%\tikzstyle{ltensor}=[tensor, trapezium, shape border rotate=270, trapezium stretches, minimum width=20pt/sqrt(3), minimum height=10pt, inner xsep=0.001pt, shape border rotate=270]
+%\tikzstyle{rtensor}=[tensor, trapezium, shape border rotate=270, trapezium stretches, minimum width=20pt/sqrt(3), minimum height=10pt, inner xsep=0.001pt, shape border rotate=90]
+% Rounded circle style.
+\tikzstyle{ltensor}=[tensor, rounded rectangle, rounded rectangle left arc=none]
+\tikzstyle{rtensor}=[tensor, rounded rectangle, rounded rectangle right arc=none]
 % Environment (E/F) tensors.
 \tikzstyle{etensor}=[tensor, minimum height=38.5pt]
 
@@ -157,7 +161,7 @@ SVD:
     \begin{tikzpicture}[baseline=-0.25em]
         \node[ltensor, label=\(U\)] (A1) at (0.25, 0) {};
         \node[dtensor, label=\(D\)] (D) at (1, 0) {};
-        \node[ctensor, label=\(V^\dag\)] (Vdag) at (1.75, 0) {};
+        \node[rtensor, label=\(V^\dag\)] (Vdag) at (1.75, 0) {};
         \draw (A1.south) -- +(0, -0.25);
         \draw (A1.west) -- +(-0.25, 0);
         \draw (Vdag.east) -- +(0.25, 0);
@@ -309,7 +313,7 @@ Multi-site expectation value:
         \node[ltensor]                     (A3conj) at (1.5, -0.5) {};
         \node[atensor]                     (A4conj) at (2.25, -0.5) {};
         \node[rtensor]                     (A5conj) at (3, -0.5) {};
-        \node[wtensor, minimum width=50pt] (O) at (2.25, 0) {};
+        \node[wtensor, minimum width=52.667pt] (O) at (2.25, 0) {};
         \draw (A3) -- (O.north -| A3);
         \draw (A3conj) -- (O.south -| A3conj);
         \draw (A4) -- (O.north -| A4);
@@ -326,7 +330,7 @@ Multi-site expectation value:
 MPO:
 \begin{equation}
     \begin{tikzpicture}[baseline=-0.25em]
-        \node[wtensor, minimum width=50pt] (O) at (2.25, 0) {};
+        \node[wtensor, minimum width=52.667pt] (O) at (2.25, 0) {};
         \coordinate (A3) at (1.5, 0.5) {};
         \coordinate (A4) at (2.25, 0.5) {};
         \coordinate (A5) at (3, 0.5) {};
