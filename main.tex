@@ -267,7 +267,7 @@ Expectation value:
         \node[atensor]                    (A5conj) at (5, -1) {};
         \node[notensor]                   (A6conj) at (6, -1) {\(\ldots\)};
         \node[atensor]                    (A7conj) at (7, -1) {};
-        \node[wtensor, label=right:\(O\)] (O) at (4, 0) {};
+        \node[wtensor, label={right, text depth=}:\(O\)] (O) at (4, 0) {};
         \draw (A1) -- (A1conj);
         \draw (A3) -- (A3conj);
         \draw (A4) -- (O) -- (A4conj);
@@ -295,7 +295,7 @@ Expectation value:
         \node[rtensor]                    (A5conj) at (5, -1) {};
         \node[notensor]                   (A6conj) at (6, -1) {\(\ldots\)};
         \node[rtensor]                    (A7conj) at (7, -1) {};
-        \node[wtensor, label=right:\(O\)] (O) at (4, 0) {};
+        \node[wtensor, label={right, text depth=}:\(O\)] (O) at (4, 0) {};
         \draw (A1) -- (A1conj);
         \draw (A3) -- (A3conj);
         \draw (A4) -- (O) -- (A4conj);
@@ -407,8 +407,8 @@ MPO expectation value:
         \node[atensor, label=\(C_i\)]           (A1) at (0, 1) {};
         \node[atensor]                          (A1conj) at (0, -1) {};
         \node[wtensor]                          (W4) at (0, 0) {};
-        \node[etensor, label=left:\(E_{i-1}\)]  (E) at (-1, 0) {};
-        \node[etensor, label=right:\(F_{i+1}\)] (F) at (1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E_{i-1}\)]  (E) at (-1, 0) {};
+        \node[etensor, label={right, text depth=}:\(F_{i+1}\)] (F) at (1, 0) {};
         \draw (A1) -- (W4) -- (A1conj);
         \draw (E) -- (W4) -- (F);
         \draw (A1) -- (E.east |- A1);
@@ -420,8 +420,8 @@ MPO expectation value:
     \begin{tikzpicture}[tensornetwork]
         \node[ctensor, label=\(D_i\)]           (A1) at (0, 1) {};
         \node[ctensor]                          (A1conj) at (0, -1) {};
-        \node[etensor, label=left:\(E_i\)]      (E) at (-1, 0) {};
-        \node[etensor, label=right:\(F_{i+1}\)] (F) at (1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E_i\)]      (E) at (-1, 0) {};
+        \node[etensor, label={right, text depth=}:\(F_{i+1}\)] (F) at (1, 0) {};
         \draw (E) -- (F);
         \draw (A1) -- (E.east |- A1);
         \draw (A1conj) -- (E.east |- A1conj);
@@ -435,7 +435,7 @@ Environment tensors:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A1) at (0, 1) {};
         \coordinate (A1conj) at (0, -1) {};
-        \node[etensor, label=left:\(E_1\)] (E) at (-1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E_1\)] (E) at (-1, 0) {};
         \draw (E.east) -- +(0.5, 0);
         \draw (E.east |- A1) -- +(0.5, 0);
         \draw (E.east |- A1conj) -- +(0.5, 0);
@@ -454,7 +454,7 @@ Environment tensors:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A1) at (0, 1) {};
         \coordinate (A1conj) at (0, -1) {};
-        \node[etensor, label=left:\(E_i\)] (E) at (-1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E_i\)] (E) at (-1, 0) {};
         \draw (E.east) -- +(0.5, 0);
         \draw (E.east |- A1) -- +(0.5, 0);
         \draw (E.east |- A1conj) -- +(0.5, 0);
@@ -464,7 +464,7 @@ Environment tensors:
         \node[ltensor, label=\(L_i\)]          (A1) at (0, 1) {};
         \node[ltensor]                         (A1conj) at (0, -1) {};
         \node[wtensor]                         (W1) at (0, 0) {};
-        \node[etensor, label=left:\(E_{i-1}\)] (E) at (-1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E_{i-1}\)] (E) at (-1, 0) {};
         \draw (A1.east) -- +(0.5, 0);
         \draw (A1conj.east) -- +(0.5, 0);
         \draw (W1.east) -- +(0.5, 0);
@@ -479,7 +479,7 @@ Environment tensors:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A1) at (0, 1) {};
         \coordinate (A1conj) at (0, -1) {};
-        \node[etensor, label=right:\(F_N\)] (F) at (1, 0) {};
+        \node[etensor, label={right, text depth=}:\(F_N\)] (F) at (1, 0) {};
         \draw (F.west) -- +(-0.5, 0);
         \draw (F.west|- A1) -- +(-0.5, 0);
         \draw (F.west |- A1conj) -- +(-0.5, 0);
@@ -498,7 +498,7 @@ Environment tensors:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A1) at (0, 1) {};
         \coordinate (A1conj) at (0, -1) {};
-        \node[etensor, label=right:\(F_i\)] (F) at (1, 0) {};
+        \node[etensor, label={right, text depth=}:\(F_i\)] (F) at (1, 0) {};
         \draw (F.west) -- +(-0.5, 0);
         \draw (F.west|- A1) -- +(-0.5, 0);
         \draw (F.west |- A1conj) -- +(-0.5, 0);
@@ -508,7 +508,7 @@ Environment tensors:
         \node[rtensor, label=\(R_i\)]           (A1) at (0, 1) {};
         \node[rtensor]                          (A1conj) at (0, -1) {};
         \node[wtensor]                          (W1) at (0, 0) {};
-        \node[etensor, label=right:\(F_{i+1}\)] (F) at (1, 0) {};
+        \node[etensor, label={right, text depth=}:\(F_{i+1}\)] (F) at (1, 0) {};
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A1conj.west) -- +(-0.5, 0);
         \draw (W1.west) -- +(-0.5, 0);
@@ -600,7 +600,7 @@ Left-orthogonal form:
     \begin{tikzpicture}[tensornetwork]
         \node[ltensor] (A1) at (0, 1) {};
         \node[ltensor] (A1conj) at (0, -1) {};
-        \node[ctensor, label=right:\(\rho_L\)] (rho) at (0.75, 0) {};
+        \node[ctensor, label={right, text depth=}:\(\rho_L\)] (rho) at (0.75, 0) {};
         \draw (A1.south) -- (A1conj.north);
         \draw[rounded corners] (A1.east) -- (A1.east -| rho.north) -- (rho) -- (rho.south |- A1conj.east) -- (A1conj.east);
         \draw (A1.west) -- +(-0.5, 0);
@@ -610,7 +610,7 @@ Left-orthogonal form:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A1) at (0, 1) {};
         \coordinate (A1conj) at (0, -1) {};
-        \node[ctensor, label=right:\(\rho_L\)] (rho) at (0.75, 0) {};
+        \node[ctensor, label={right, text depth=}:\(\rho_L\)] (rho) at (0.75, 0) {};
         \draw[rounded corners] (rho.north) -- (rho.north |- A1.east) -- +(-0.5, 0);
         \draw[rounded corners] (rho.south) -- (rho.south |- A1conj.east) -- +(-0.5, 0);
     \end{tikzpicture}
@@ -635,7 +635,7 @@ Right-orthogonal form:
     \begin{tikzpicture}[tensornetwork]
         \node[ltensor] (A1) at (0, 1) {};
         \node[ltensor] (A1conj) at (0, -1) {};
-        \node[ctensor, label=left:\(\rho_R\)] (rho) at (-0.75, 0) {};
+        \node[ctensor, label={left, text depth=}:\(\rho_R\)] (rho) at (-0.75, 0) {};
         \draw (A1.south) -- (A1conj.north);
         \draw[rounded corners] (A1.west) -- (A1.west -| rho.north) -- (rho) -- (rho.south |- A1conj.west) -- (A1conj.west);
         \draw (A1.east) -- +(0.5, 0);
@@ -645,7 +645,7 @@ Right-orthogonal form:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A1) at (0, 1) {};
         \coordinate (A1conj) at (0, -1) {};
-        \node[ctensor, label=left:\(\rho_R\)] (rho) at (-0.75, 0) {};
+        \node[ctensor, label={left, text depth=}:\(\rho_R\)] (rho) at (-0.75, 0) {};
         \draw[rounded corners] (rho.north) -- (rho.north |- A1.west) -- +(0.5, 0);
         \draw[rounded corners] (rho.south) -- (rho.south |- A1conj.west) -- +(0.5, 0);
     \end{tikzpicture}
@@ -719,7 +719,7 @@ iMPS expectation value:
         \node[ltensor] (A3) at (3, 1) {};
         \node[ltensor] (A3conj) at (3, -1) {};
         \node[wtensor] (O) at (3, 0) {};
-        \node[ctensor, label=right:\(\rho_L\)] (rho) at (3.75, 0) {};
+        \node[ctensor, label={right, text depth=}:\(\rho_L\)] (rho) at (3.75, 0) {};
         \draw (A3) -- (O) -- (A3conj);
         \draw[rounded corners] (A3.west) -- +(-0.5, 0) -- +(-0.5, -2) -- (A3conj.west);
         \draw[rounded corners] (A3.east) -- (A3.east -| rho.north) -- (rho) -- (rho.south |- A3conj.east) -- (A3conj.east);
@@ -768,7 +768,7 @@ Environment tensor recursion relation:
     \begin{tikzpicture}[tensornetwork]
         \coordinate (A4) at (0, 1) {};
         \coordinate (A4conj) at (0, -1) {};
-        \node[etensor, label=left:\(E(n+1)\)] (E) at (-1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E(n+1)\)] (E) at (-1, 0) {};
         \draw (E.east) -- +(0.5, 0) node[right] {\(\scriptstyle\alpha\)};
         \draw (E.east |- A4) -- +(0.5, 0);
         \draw (E.east |- A4conj) -- +(0.5, 0);
@@ -778,7 +778,7 @@ Environment tensor recursion relation:
         \node[ltensor] (A1) at (0, 1) {};
         \node[ltensor] (A1conj) at (0, -1) {};
         \node[wtensor]  (W1) at (0, 0) {};
-        \node[etensor, label=left:\(E(n)\)] (E) at (-1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E(n)\)] (E) at (-1, 0) {};
         \draw (A1.east) -- +(0.5, 0);
         \draw (A1conj.east) -- +(0.5, 0);
         \draw (W1.east) -- +(0.5, 0) node[right] {\(\scriptstyle\alpha\)};
@@ -794,7 +794,7 @@ Environment tensor recursion relation:
         \node[ltensor] (A1) at (0, 1) {};
         \node[ltensor] (A1conj) at (0, -1) {};
         \node[wtensor]  (W1) at (0, 0) {};
-        \node[etensor, label=left:\(E(n)\)] (E) at (-1, 0) {};
+        \node[etensor, label={left, text depth=}:\(E(n)\)] (E) at (-1, 0) {};
         \draw (A1.east) -- +(0.5, 0);
         \draw (A1conj.east) -- +(0.5, 0);
         \draw (W1.east) -- +(0.5, 0) node[right] {\(\scriptstyle\alpha\)};
