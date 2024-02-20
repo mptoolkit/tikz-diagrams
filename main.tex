@@ -36,9 +36,11 @@
 % Wide tensors, e.g. multi-site operators: argument specifies how many sites wide.
 \tikzstyle{widetensor}[2]=[tensor, minimum width=(1cm/\defaulttensorsize*0.75*(#1-1)+1)*\tensorsize]
 
-\tikzstyle{tensornetwork}=[baseline=-0.25em, xscale=0.75, yscale=0.5, every node/.style={inner sep=2pt},
-                          % Add some padding around the picture.
-                           execute at end picture={\path (current bounding box.south west) +(-0.1, 0) (current bounding box.north east) +(0.1, 0);}]
+\tikzstyle{tensornetwork}=[baseline=-0.25em, xscale=0.75, yscale=0.5,
+                           % Default padding for labels.
+                           every node/.style={inner xsep=1pt, inner ysep=5pt, text depth=0pt},
+                           % Add some padding around the picture.
+                           execute at end picture={\path (current bounding box.south west) +(-2pt, 0) (current bounding box.north east) +(2pt, 0);}]
 
 % Deprecated styles.
 % Triangular-style tensors
