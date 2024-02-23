@@ -17,7 +17,7 @@
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{shapes.misc}
 % Base style for tensors.
-\tikzstyle{tensor}=[draw, inner sep=0, minimum size=\tensorsize]
+\tikzstyle{tensor}=[draw, inner sep=0, outer sep=0, minimum size=\tensorsize]
 % Used for drawing gaps in the tensor network diagram.
 \tikzstyle{notensor}=[minimum size=\tensorsize]
 % Style for A tensors: if a square-shaped node is desired instead, ‘circle’ can be removed here.
@@ -38,7 +38,7 @@
 
 \tikzstyle{tensornetwork}=[baseline=-0.25em, xscale=0.75, yscale=0.5,
                            % Default padding for labels.
-                           every node/.style={inner xsep=1pt, inner ysep=5pt, text depth=0pt},
+                           every node/.style={inner sep=0, outer xsep=2pt, outer ysep=5pt, text depth=0pt},
                            % Add some padding around the picture.
                            execute at end picture={\path (current bounding box.south west) +(-2pt, 0) (current bounding box.north east) +(2pt, 0);}]
 
