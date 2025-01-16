@@ -14,6 +14,7 @@
 \newcommand{\defaulttensorsize}{10pt}
 \newcommand{\tensorsize}{\defaulttensorsize}
 
+\usetikzlibrary{patterns,patterns.meta}
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{shapes.misc}
 % Base style for tensors.
@@ -35,6 +36,23 @@
 \tikzstyle{etensor}=[tensor, minimum height=(1cm/\defaulttensorsize*0.5*2+1)*\tensorsize]
 % Wide tensors, e.g. multi-site operators: argument specifies how many sites wide.
 \tikzstyle{widetensor}[2]=[tensor, minimum width=(1cm/\defaulttensorsize*0.75*(#1-1)+1)*\tensorsize]
+% Diagonal striped pattern.
+\newcommand{\stripesize}{4pt}
+\pgfdeclarepatternformonly{stripes}{\pgfpointorigin}{\pgfpoint{\stripesize}{\stripesize}}{\pgfpoint{\stripesize}{\stripesize}}
+{
+    \pgfpathmoveto{\pgfpoint{0}{0}}
+    \pgfpathlineto{\pgfpoint{\stripesize}{\stripesize}}
+    \pgfpathlineto{\pgfpoint{\stripesize}{0.5*\stripesize}}
+    \pgfpathlineto{\pgfpoint{0.5*\stripesize}{0}}
+    \pgfpathclose%
+    \pgfusepath{fill}
+    \pgfpathmoveto{\pgfpoint{0}{0.5*\stripesize}}
+    \pgfpathlineto{\pgfpoint{0}{\stripesize}}
+    \pgfpathlineto{\pgfpoint{0.5*\stripesize}{\stripesize}}
+    \pgfpathclose%
+    \pgfusepath{fill}
+}
+\tikzstyle{striped}=[pattern=stripes, pattern color=lightgray]
 
 \tikzstyle{tensornetwork}=[baseline=-0.25em, xscale=0.75, yscale=0.5,
                            % Default padding for labels.
@@ -851,4 +869,67 @@ Inline diagram:
     \end{tikzpicture}
     .
 \end{math}
+\\%
+Patterns for tensors:
+\begin{equation}
+    B^s =
+    \begin{tikzpicture}[tensornetwork]
+        \node[ltensor, striped, label=\(N_L\)] (A1) at (1, 0) {};
+        \node[atensor, fill=lightgray, label=\(X\)] (A2) at (2, 0) {};
+        \draw (A1.south) -- +(0, -0.5);
+        \draw (A1.west) -- +(-0.5, 0);
+        \draw (A2.east) -- +(0.5, 0);
+        \draw (A1) -- (A2);
+    \end{tikzpicture}
+    .
+\end{equation}
+% Note that the ‘tensornetwork’ style uses different scales for the x and y
+% axes (scaled by 0.75 and 0.5, respectively). This is helpful for MPS
+% diagrams, but for PEPS, we want them to have the same scale, so we change the
+% y scale from 0.5 to 0.75 by adding ‘yscale=1.5’ after using ‘tensornetwork’.
+iPEPS:
+\begin{equation}
+    \ket{\Psi} =
+    \begin{tikzpicture}[tensornetwork, yscale=1.5]
+        \node[atensor] (A11) at (1, -1) {};
+        \node[atensor] (A21) at (2, -1) {};
+        \node[atensor] (A31) at (3, -1) {};
+        \node[atensor] (A12) at (1, 0) {};
+        \node[atensor] (A22) at (2, 0) {};
+        \node[atensor] (A32) at (3, 0) {};
+        \node[atensor] (A13) at (1, 1) {};
+        \node[atensor] (A23) at (2, 1) {};
+        \node[atensor] (A33) at (3, 1) {};
+        \draw (A11) -- (A21) -- (A31);
+        \draw (A12) -- (A22) -- (A32);
+        \draw (A13) -- (A23) -- (A33);
+        \draw (A11) -- (A12) -- (A13);
+        \draw (A21) -- (A22) -- (A23);
+        \draw (A31) -- (A32) -- (A33);
+        % Physical legs
+        \draw (A11) -- +(-0.5, -0.5);
+        \draw (A21) -- +(-0.5, -0.5);
+        \draw (A31) -- +(-0.5, -0.5);
+        \draw (A12) -- +(-0.5, -0.5);
+        \draw (A22) -- +(-0.5, -0.5);
+        \draw (A32) -- +(-0.5, -0.5);
+        \draw (A13) -- +(-0.5, -0.5);
+        \draw (A23) -- +(-0.5, -0.5);
+        \draw (A33) -- +(-0.5, -0.5);
+        % Legs coming off the ends
+        \draw (A11.south) -- +(0, -0.5);
+        \draw (A21.south) -- +(0, -0.5) node[left, rotate=90] {\(\ldots\)};
+        \draw (A31.south) -- +(0, -0.5);
+        \draw (A13.north) -- +(0, 0.5);
+        \draw (A23.north) -- +(0, 0.5) node[right, rotate=90] {\(\ldots\)};
+        \draw (A33.north) -- +(0, 0.5);
+        \draw (A11.west) -- +(-0.5, 0);
+        \draw (A12.west) -- +(-0.5, 0) node[left] {\(\ldots\)};
+        \draw (A13.west) -- +(-0.5, 0);
+        \draw (A31.east) -- +(0.5, 0);
+        \draw (A32.east) -- +(0.5, 0) node[right] {\(\ldots\)};
+        \draw (A33.east) -- +(0.5, 0);
+    \end{tikzpicture}
+    .
+\end{equation}
 \end{document}
