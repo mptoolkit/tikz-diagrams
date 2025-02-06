@@ -932,4 +932,40 @@ iPEPS:
     \end{tikzpicture}
     .
 \end{equation}
+Schmidt decomposition:
+\begin{equation}
+    \begin{tikzpicture}[tensornetwork]
+        \node[widetensor=3] (C) at (2, 0) {};
+        \coordinate (A1) at (1, 0.5) {};
+        \coordinate (A2) at (1.5, 0.5) {};
+        \coordinate (A3) at (2, 0.5) {};
+        \coordinate (A4) at (2.5, 0.5) {};
+        \coordinate (A5) at (3, 0.5) {};
+        \draw (C.south -| A1) -- +(0, -0.5) node[below] {\(\scriptstyle 1\)};
+        \draw (C.south -| A2) -- +(0, -0.5) node[below] {\(\scriptstyle 2\)};
+        \draw (C.south -| A3) -- +(0, -0.5) node[below] {\(\scriptstyle 3\)};
+        \draw (C.south -| A4) node[below] {\(\ldots\)};
+        \draw (C.south -| A5) -- +(0, -0.5) node[below] {\(\scriptstyle N\)};
+    \end{tikzpicture}
+    =
+    \begin{tikzpicture}[tensornetwork]
+        \node[widetensor=2] (L) at (1.5, 0) {};
+        \node[atensor] (C) at (3, 0) {};
+        \node[widetensor=2] (R) at (4.5, 0) {};
+        \coordinate (A1) at (1, 0.5) {};
+        \coordinate (A2) at (1.5, 0.5) {};
+        \coordinate (A3) at (2, 0.5) {};
+        \coordinate (A4) at (4, 0.5) {};
+        \coordinate (A5) at (4.5, 0.5) {};
+        \coordinate (A6) at (5, 0.5) {};
+        \draw (L) -- (C) -- (R);
+        \draw (L.south -| A1) -- +(0, -0.5) node[below] {\(\scriptstyle 1\)};
+        \draw (L.south -| A2) node[below] {\(\ldots\)};
+        \draw (L.south -| A3) -- +(0, -0.5) node[below] {\(\scriptstyle n\vphantom{1}\)};
+        \draw (R.south -| A4) -- +(0, -0.5) node[below] {\(\scriptstyle n+1\)};
+        \draw (R.south -| A5) node[below] {\(\ldots\)};
+        \draw (R.south -| A6) -- +(0, -0.5) node[below] {\(\scriptstyle N\)};
+    \end{tikzpicture}
+    .
+\end{equation}
 \end{document}
