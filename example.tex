@@ -8,26 +8,152 @@
 \usepackage[a4paper]{geometry}
 \usepackage{tensor-network}
 
-% Optional: customize tensor appearance with 
+% Optional: customize tensor appearance with
 % \tnsetup{tensorsize=12pt, stripesize=6pt, xscale=0.8, yscale=0.55}
+% This document uses slightly larger defaults to make the annotations easier to read.
+\tnsetup{tensorsize=12pt, xscale=0.9, yscale=0.6, outer ysep=7pt}
 
 \title{Ti\textit{k}Z tensor network diagrams}
-\author{Jesse Osborne}
+\author{Jesse Osborne and Ian McCulloch}
 
 \begin{document}
 \maketitle
 
+\section*{Customization cheatsheet}
 \noindent
-Finite MPS:
+The package exposes keys that can be configured globally via \verb+\tnsetup{<key>=<value>}+ and mixed locally inside each \texttt{tikzpicture}. Useful keys include
+\verb+tensorsize+, \verb+tensor fill+, \verb+tensor draw+, \verb+tensor text+, \verb+tensor opacity+, \verb+shade top+, \verb+shade bottom+, \verb+stripesize+, \verb+stripe density+, \verb+xscale+, \verb+yscale+, \verb+outer xsep+, and \verb+outer ysep+.
+Line styles can be supplied directly to \verb+\draw+ (for example \verb+[very thick]+ or \verb+[wavy]+). Labels follow TikZ's \verb+label=<placement>:<text>+ syntax and accept multiple placements on the same node.
+
+\subsection*{Colors, shading, and labels}
+\noindent
+Set default colours and opacity with \verb+\tnsetup+. Use the built-in \verb+shadedtensor+ or \verb+striped+ styles for quick decorations, and place labels above, below, left, right, or diagonally using TikZ's label anchors. The text inside the node is written between the curly braces of \verb+\node+.
+\begin{equation}
+    \tnsetup{tensor fill=blue!12, tensor draw=blue!70!black, tensor text=blue!45!black, tensor opacity=0.9, shade top=orange!10, shade bottom=orange!70}
+    \begin{tikzpicture}[tensornetwork, xscale=1.05]
+        \node[atensor,
+              label=above:{above},
+              label=below:{below},
+              label=left:{left},
+              label=right:{right},
+              label={[label distance=3pt]45:{diag}}] (A) at (0, 0) {inside};
+        \node[shadedtensor, label=below:{shaded}] (B) at (2.2, 0) {\(\Phi\)};
+        \node[ctensor, striped, label=below:{striped}] (C) at (4.4, 0) {};
+        \draw[very thick] (A) -- (B);
+        \draw[wavy, orange!80!black, thick] (B) -- (C);
+    \end{tikzpicture}
+    \tnsetup{initialize}% reset defaults for the rest of the document
+    .
+\end{equation}
+\noindent
+Minimal template for the diagram above:
+\begin{verbatim}
+\tnsetup{tensor fill=blue!12,
+         tensor draw=blue!70!black,
+         shade top=orange!10}
+\begin{tikzpicture}[tensornetwork]
+  \node[atensor,
+        label=above:{above},
+        label={[label distance=3pt]45:{diag}}] (A) at (0, 0) {inside};
+  \node[shadedtensor] (B) at (2.2, 0) {$\Phi$};
+  \node[ctensor, striped] (C) at (4.4, 0) {};
+  \draw[very thick] (A) -- (B);
+  \draw[wavy, orange!80!black, thick] (B) -- (C);
+\end{tikzpicture}
+\end{verbatim}
+
+\subsection*{Sizing diagrams}
+\noindent
+TikZ's \verb+scale=<number>+ multiplies coordinates and line lengths (it spreads nodes apart) but leaves tensor shapes at their configured size. The package key \verb+/tensor network/tensorsize=<length>+ directly controls the drawn radius of tensors and the padding used to place their labels. Combine them to enlarge a figure while keeping labels legible and consistent across different scalings.
+\begin{equation}
+    \begin{tikzpicture}[tensornetwork]
+        \node[atensor, label=below:{default}] (A1) at (0, 0) {};
+        \node[atensor] (A2) at (1, 0) {};
+        \node[atensor] (A3) at (2, 0) {};
+        \draw (A1) -- (A2) -- (A3);
+    \end{tikzpicture}
+    \qquad
+    \begin{tikzpicture}[tensornetwork, scale=1.3]
+        \node[atensor, label=below:{more spacing}] (B1) at (0, 0) {};
+        \node[atensor] (B2) at (1, 0) {};
+        \node[atensor] (B3) at (2, 0) {};
+        \draw (B1) -- (B2) -- (B3);
+    \end{tikzpicture}
+    .
+\end{equation}
+\begin{equation}
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensorsize=14pt]
+        \node[atensor, label=below:{larger nodes}] (C1) at (0, 0) {};
+        \node[atensor] (C2) at (1, 0) {};
+        \node[atensor] (C3) at (2, 0) {};
+        \draw (C1) -- (C2) -- (C3);
+    \end{tikzpicture}
+    \qquad
+    \begin{tikzpicture}[tensornetwork, scale=1.3, /tensor network/tensorsize=14pt]
+        \node[atensor, label=below:{spacing + size}] (D1) at (0, 0) {};
+        \node[atensor] (D2) at (1, 0) {};
+        \node[atensor] (D3) at (2, 0) {};
+        \draw (D1) -- (D2) -- (D3);
+    \end{tikzpicture}
+    .
+\end{equation}
+\noindent
+Template used above:
+\begin{verbatim}
+\begin{tikzpicture}[tensornetwork, scale=1.3,
+                    /tensor network/tensorsize=14pt]
+  \node[atensor] (A1) at (0, 0) {};
+  \node[atensor] (A2) at (1, 0) {};
+  \node[atensor] (A3) at (2, 0) {};
+  \draw (A1) -- (A2) -- (A3);
+\end{tikzpicture}
+\end{verbatim}
+
+\subsection*{Line styles and annotations}
+\noindent
+All TikZ line styles work out of the box. The example below mixes dashed legs, a thick leg labelled inline, and a wavy connector for emphasis.
+\begin{equation}
+    \begin{tikzpicture}[tensornetwork]
+        \node[ltensor] (L) at (0, 0) {};
+        \node[atensor, label=above:{operator}] (O) at (1.6, 0) {\(O\)};
+        \node[rtensor, label=below:{result}] (R) at (3.2, 0) {};
+        \draw[dashed] (L.south) -- +(0, -0.6);
+        \draw[very thick] (O.north) -- +(0, 0.6) node[above=4pt] {label on leg};
+        \draw[wavy, red!70!black, thick] (L) -- (O);
+        \draw[->, blue!70!black] (O) -- (R) node[midway, below] {flow};
+    \end{tikzpicture}
+    .
+\end{equation}
+\noindent
+Template used above:
+\begin{verbatim}
+\begin{tikzpicture}[tensornetwork]
+  \node[ltensor] (L) at (0, 0) {};
+  \node[atensor, label=above:{operator}] (O) at (1.6, 0) {$O$};
+  \node[rtensor, label=below:{result}] (R) at (3.2, 0) {};
+  \draw[dashed] (L.south) -- +(0, -0.6);
+  \draw[very thick] (O.north) -- +(0, 0.6) node[above] {label on leg};
+  \draw[wavy, red!70!black, thick] (L) -- (O);
+  \draw[->, blue!70!black] (O) -- (R) node[midway, below] {flow};
+\end{tikzpicture}
+\end{verbatim}
+
+\section*{Worked examples}
+\noindent
+The remaining diagrams echo the ones in the package README but include brief guidance on how to adapt them. The defaults use neutral black strokes and white fills; combine them with \verb+\tnsetup+ keys such as \verb+tensor fill=gray!8+ or local TikZ options such as \verb+[rounded corners]+ to introduce emphasis.
+
+
+\noindent
+Finite MPS: the circles mark site tensors and the short legs denote physical indices. Adjust colours or leg thickness with \verb+\tnsetup+ or local \verb+[very thick]+ modifiers to highlight boundaries. Below, the boundary tensors are tinted to show how local colour overrides look.
 \begin{equation}
     \ket{\Psi} =
     \begin{tikzpicture}[tensornetwork]
-        \node[atensor, label=\(A_1\)]     (A1) at (1, 0) {};
+        \node[atensor, fill=green!12, draw=green!60!black, label=\(A_1\)]     (A1) at (1, 0) {};
         \node[atensor, label=\(A_2\)]     (A2) at (2, 0) {};
         \node[atensor, label=\(A_3\)]     (A3) at (3, 0) {};
         \node[notensor]                   (A4) at (4, 0) {\(\ldots\)};
         \node[atensor, label=\(A_{N-1}\)] (A5) at (5, 0) {};
-        \node[atensor, label=\(A_N\)]     (A6) at (6, 0) {};
+        \node[atensor, fill=orange!12, draw=orange!60!black, label=\(A_N\)]     (A6) at (6, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A2.south) -- +(0, -0.5);
         \draw (A3.south) -- +(0, -0.5);
@@ -37,36 +163,37 @@ Finite MPS:
     \end{tikzpicture}
     .
 \end{equation}
-Gauge transform:
+Gauge transform: swap into a new gauge by inserting invertible tensors. Here the gauge boxes use green fills and wavy internal bonds to illustrate local styling; use \verb+\tnsetup{tensor fill=green!10, tensor draw=green!50!black}+ to change defaults instead.
 \begin{equation}
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=green!12, /tensor network/tensor draw=green!60!black]
         \node[atensor, label=\(A_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A1.east) -- +(0.5, 0);
     \end{tikzpicture}
     \rightarrow
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=green!12, /tensor network/tensor draw=green!60!black]
         \node[ctensor, label=\(G_{i-1}^{-1}\)] (G0inv) at (0, 0) {};
         \node[atensor, label=\(A_i\)] (A1) at (1, 0) {};
         \node[ctensor, label=\(G_i\)] (G1) at (2, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (G0inv.west) -- +(-0.5, 0);
         \draw (G1.east) -- +(0.5, 0);
-        \draw (G0inv) -- (A1) -- (G1);
+        \draw[wavy, green!60!black, thick] (G0inv.east) -- (A1.west);
+        \draw[wavy, green!60!black, thick] (A1.east) -- (G1.west);
     \end{tikzpicture}
     .
 \end{equation}
-Left-orthogonal form:
+Left-orthogonal form: left-canonical tensors appear as rounded rectangles. You can also make the conjugate copy translucent via \verb+tensor opacity=0.7+ if you want to de-emphasise it in print; here the conjugate copy is drawn with a tinted, semi-transparent fill.
 \begin{equation}
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=blue!18, /tensor network/tensor draw=blue!60!black]
         \node[atensor, label=\(A_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A1.east) -- +(0.5, 0);
     \end{tikzpicture}
     \rightarrow
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=blue!18, /tensor network/tensor draw=blue!60!black]
         \node[ltensor, label=\(L_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
@@ -74,9 +201,9 @@ Left-orthogonal form:
     \end{tikzpicture}
     ,
     \qquad
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=blue!18, /tensor network/tensor draw=blue!60!black]
         \node[ltensor, label=\(L_i\)] (A1) at (1, 1) {};
-        \node[ltensor, label=below:\(L_i\)] (A1conj) at (1, -1) {};
+        \node[ltensor, fill opacity=0.55, draw opacity=0.55, label=below:\(L_i\)] (A1conj) at (1, -1) {};
         \draw (A1.south) -- (A1conj.north);
         \draw[rounded corners] (A1.west) -- +(-0.5, 0) -- +(-0.5, -2) -- (A1conj.west);
         \draw (A1.east) -- +(0.5, 0);
@@ -88,16 +215,16 @@ Left-orthogonal form:
     \end{tikzpicture}
     .
 \end{equation}
-Right-orthogonal form:
+Right-orthogonal form: mirror of the above. As with all diagrams, leg lengths can be tweaked with explicit coordinates such as \verb+-- +(0.7, 0)+ if you need more room for labels. This version tints the right-canonical tensors red and leaves the conjugate copy slightly faded.
 \begin{equation}
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=red!16, /tensor network/tensor draw=red!60!black]
         \node[atensor, label=\(A_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A1.east) -- +(0.5, 0);
     \end{tikzpicture}
     \rightarrow
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=red!16, /tensor network/tensor draw=red!60!black]
         \node[rtensor, label=\(R_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
@@ -105,9 +232,9 @@ Right-orthogonal form:
     \end{tikzpicture}
     ,
     \qquad
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=red!16, /tensor network/tensor draw=red!60!black]
         \node[rtensor, label=\(R_i\)] (A1) at (1, 1) {};
-        \node[rtensor, label=below:\(R_i\)] (A1conj) at (1, -1) {};
+        \node[rtensor, fill opacity=0.55, draw opacity=0.55, label=below:\(R_i\)] (A1conj) at (1, -1) {};
         \draw (A1.south) -- (A1conj.north);
         \draw[rounded corners] (A1.east) -- +(0.5, 0) -- +(0.5, -2) -- (A1conj.east);
         \draw (A1.west) -- +(-0.5, 0);
@@ -119,18 +246,18 @@ Right-orthogonal form:
     \end{tikzpicture}
     .
 \end{equation}
-SVD:
+SVD: diagonal and unitary factors use distinctive node shapes. Add shading to emphasise the spectrum, e.g. \verb+[shadedtensor]+ on \(D\); the diagram below also colours the unitaries for readability.
 \begin{equation}
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=purple!10, /tensor network/tensor draw=purple!70!black]
         \node[atensor, label=\(A_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A1.east) -- +(0.5, 0);
     \end{tikzpicture}
     =
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=purple!10, /tensor network/tensor draw=purple!70!black]
         \node[ltensor, label=\(U\)] (A1) at (0, 0) {};
-        \node[dtensor, label=\(D\)] (D) at (1, 0) {};
+        \node[dtensor, shadedtensor, top color=orange!15, bottom color=orange!65, label=\(D\)] (D) at (1, 0) {};
         \node[rtensor, label=\(V^\dag\)] (Vdag) at (2, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
@@ -139,10 +266,10 @@ SVD:
     \end{tikzpicture}
     .
 \end{equation}
-Mixed-canonical form:
+Mixed-canonical form: compare the default spacing (outer ysep close to the package default) with a roomier choice such as \verb+outer ysep=9pt+ to accommodate multi-line labels.
 \begin{equation}
     \ket{\Psi} =
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/outer ysep=5pt]
         \node[ltensor, label=\(L_1\)]     (A1) at (1, 0) {};
         \node[ltensor, label=\(L_2\)]     (A2) at (2, 0) {};
         \node[notensor]                   (A3) at (3, 0) {\(\ldots\)};
@@ -165,7 +292,7 @@ Mixed-canonical form:
 \end{equation}
 \begin{equation}
     \ket{\Psi} =
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/outer ysep=9pt]
         \node[ltensor, label=\(L_1\)]     (A1) at (1, 0) {};
         \node[ltensor, label=\(L_2\)]     (A2) at (2, 0) {};
         \node[notensor]                   (A3) at (3, 0) {\(\ldots\)};
@@ -187,27 +314,28 @@ Mixed-canonical form:
     \end{tikzpicture}
     .
 \end{equation}
-Unitary gauge transformation:
+Unitary gauge transformation: use the diamond nodes for unitary tensors, optionally adding \verb+[wavy]+ legs to distinguish internal bonds. Here the unitaries are coloured teal and connected with wavy links.
 \begin{equation}
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=teal!10, /tensor network/tensor draw=teal!70!black]
         \node[ltensor, label=\(L_i\)] (A1) at (1, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A1.east) -- +(0.5, 0);
     \end{tikzpicture}
     \rightarrow
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=teal!10, /tensor network/tensor draw=teal!70!black]
         \node[ctensor, label=\(U_{i-1}^\dag\)] (G0inv) at (0, 0) {};
         \node[ltensor, label=\(L_i\)] (A1) at (1, 0) {};
         \node[ctensor, label=\(U_i\)] (G1) at (2, 0) {};
         \draw (A1.south) -- +(0, -0.5);
         \draw (G0inv.west) -- +(-0.5, 0);
         \draw (G1.east) -- +(0.5, 0);
-        \draw (G0inv) -- (A1) -- (G1);
+        \draw[wavy, teal!70!black, thick] (G0inv.east) -- (A1.west);
+        \draw[wavy, teal!70!black, thick] (A1.east) -- (G1.west);
     \end{tikzpicture}
     .
 \end{equation}
-Expectation value:
+Expectation value: highlight the inserted operator \(O\) by colouring the square node (e.g. \verb+[tensor fill=yellow!20]+) or by thickening its attached legs.
 \begin{equation}
     \braket{\Psi|O_i|\Psi} =
     \begin{tikzpicture}[tensornetwork]
@@ -225,10 +353,10 @@ Expectation value:
         \node[atensor]                    (A5conj) at (5, -1) {};
         \node[notensor]                   (A6conj) at (6, -1) {\(\ldots\)};
         \node[atensor]                    (A7conj) at (7, -1) {};
-        \node[wtensor, label={right, text depth=}:\(O\)] (O) at (4, 0) {};
+        \node[wtensor, fill=yellow!20, draw=orange!80!black, very thick, label={right, text depth=}:\(O\)] (O) at (4, 0) {};
         \draw (A1) -- (A1conj);
         \draw (A3) -- (A3conj);
-        \draw (A4) -- (O) -- (A4conj);
+        \draw[very thick, orange!80!black] (A4) -- (O) -- (A4conj);
         \draw (A5) -- (A5conj);
         \draw (A7) -- (A7conj);
         \draw (A1) -- (A2) -- (A3) -- (A4) -- (A5) -- (A6) -- (A7);
@@ -253,21 +381,21 @@ Expectation value:
         \node[rtensor]                    (A5conj) at (5, -1) {};
         \node[notensor]                   (A6conj) at (6, -1) {\(\ldots\)};
         \node[rtensor]                    (A7conj) at (7, -1) {};
-        \node[wtensor, label={right, text depth=}:\(O\)] (O) at (4, 0) {};
+        \node[wtensor, fill=yellow!20, draw=orange!80!black, very thick, label={right, text depth=}:\(O\)] (O) at (4, 0) {};
         \draw (A1) -- (A1conj);
         \draw (A3) -- (A3conj);
-        \draw (A4) -- (O) -- (A4conj);
+        \draw[very thick, orange!80!black] (A4) -- (O) -- (A4conj);
         \draw (A5) -- (A5conj);
         \draw (A7) -- (A7conj);
         \draw (A1) -- (A2) -- (A3) -- (A4) -- (A5) -- (A6) -- (A7);
         \draw (A1conj) -- (A2conj) -- (A3conj) -- (A4conj) -- (A5conj) -- (A6conj) -- (A7conj);
     \end{tikzpicture}
     =
-    \begin{tikzpicture}[tensornetwork]
+    \begin{tikzpicture}[tensornetwork, /tensor network/tensor fill=yellow!15, /tensor network/tensor draw=orange!80!black]
         \node[atensor, label=\(C_i\)] (A4) at (4, 1) {};
-        \node[atensor]                (A4conj) at (4, -1) {};
-        \node[wtensor]                (O) at (4, 0) {};
-        \draw (A4) -- (O) -- (A4conj);
+        \node[atensor, fill opacity=0.55, draw opacity=0.55]                (A4conj) at (4, -1) {};
+        \node[wtensor, shadedtensor, top color=white, bottom color=yellow!40]                (O) at (4, 0) {};
+        \draw[very thick, orange!80!black] (A4) -- (O) -- (A4conj);
         \draw[rounded corners] (A4.west) -- +(-0.5, 0) -- +(-0.5, -2) -- (A4conj.west);
         \draw[rounded corners] (A4.east) -- +(0.5, 0) -- +(0.5, -2) -- (A4conj.east);
     \end{tikzpicture}
@@ -326,7 +454,7 @@ MPO:
     \end{tikzpicture}
     .
 \end{equation}
-MPO expectation value:
+MPO expectation value: combine the ideas above. Long operators or multi-site gates can reuse the \verb+widetensor+ style (e.g. \verb+[widetensor=2]+) to stretch horizontally.
 \begin{equation}
     \braket{\Psi|H|\Psi} =
     \begin{tikzpicture}[tensornetwork]
@@ -765,50 +893,7 @@ Environment tensor recursion relation:
     \end{tikzpicture}
     .
 \end{equation}
-Big diagram:
-\begin{equation}
-    \ket{\Psi} =
-    % ‘scale’ scales the distance between nodes, not the sizes of nodes themselves.
-    % Adjust tensor sizes with the package key to keep labels consistent.
-    \begin{tikzpicture}[tensornetwork, scale=2, /tensor network/tensorsize=20pt]
-        \node[atensor, label=\(A_1\)]     (A1) at (1, 0) {};
-        \node[atensor, label=\(A_2\)]     (A2) at (2, 0) {};
-        \node[atensor, label=\(A_3\)]     (A3) at (3, 0) {};
-        \node[notensor]                   (A4) at (4, 0) {\(\ldots\)};
-        \node[atensor, label=\(A_{N-1}\)] (A5) at (5, 0) {};
-        \node[atensor, label=\(A_N\)]     (A6) at (6, 0) {};
-        \draw (A1.south) -- +(0, -0.5);
-        \draw (A2.south) -- +(0, -0.5);
-        \draw (A3.south) -- +(0, -0.5);
-        \draw (A5.south) -- +(0, -0.5);
-        \draw (A6.south) -- +(0, -0.5);
-        \draw (A1) -- (A2) -- (A3) -- (A4) -- (A5) -- (A6);
-    \end{tikzpicture}
-    .
-\end{equation}
-Inline diagram:
-% We use a math environment here rather than \(...\) or $...$ to not mess up
-% text editor syntax highlighting.
-\begin{math}
-    \ket{\Psi} =
-    \begin{tikzpicture}[tensornetwork, scale=0.75, /tensor network/tensorsize=7.5pt]
-        \node[atensor]  (A1) at (1, 0) {};
-        \node[atensor]  (A2) at (2, 0) {};
-        \node[atensor]  (A3) at (3, 0) {};
-        \node[notensor] (A4) at (4, 0) {\(\ldots\)};
-        \node[atensor]  (A5) at (5, 0) {};
-        \node[atensor]  (A6) at (6, 0) {};
-        \draw (A1.south) -- +(0, -0.5);
-        \draw (A2.south) -- +(0, -0.5);
-        \draw (A3.south) -- +(0, -0.5);
-        \draw (A5.south) -- +(0, -0.5);
-        \draw (A6.south) -- +(0, -0.5);
-        \draw (A1) -- (A2) -- (A3) -- (A4) -- (A5) -- (A6);
-    \end{tikzpicture}
-    .
-\end{math}
-\%
-Patterns for tensors:
+Patterns for tensors: stripes are helpful for marking environments or normalisation factors. Adjust the stripe spacing with \verb+\tnsetup{stripesize=<length>}+, control the fill-versus-gap ratio via \verb+stripe density+ (default 0.5 for equal widths), rotate them with \verb+/tensor network/stripe angle=<degrees>+, and recolour on a per-node basis via \verb+[pattern color=<colour>]+. You can even combine the pattern with shading for extra emphasis.
 \begin{equation}
     B^s =
     \begin{tikzpicture}[tensornetwork]
@@ -818,6 +903,63 @@ Patterns for tensors:
         \draw (A1.west) -- +(-0.5, 0);
         \draw (A2.east) -- +(0.5, 0);
         \draw (A1) -- (A2);
+    \end{tikzpicture}
+    .
+\end{equation}
+\noindent
+Template for varying stripe weight, colour, and angle (using a denser 6pt stripe spacing so multiple stripes fit inside each node):
+\begin{verbatim}
+\tnsetup{stripesize=6pt, stripe density=0.55}
+\begin{tikzpicture}[tensornetwork]
+  \node[ltensor, striped] (A1) at (0, 0) {};
+  \node[ctensor,
+        /tensor network/stripe density=0.65,
+        striped,
+        /tensor network/stripe angle=135,
+        pattern color=teal!70] (A2) at (2.6, 0) {};
+  \node[shadedtensor, striped,
+        pattern color=red!70] (A3) at (5.2, 0) {};
+  \draw (A1) -- (A2) -- (A3);
+\end{tikzpicture}
+\end{verbatim}
+\begin{equation}
+    \begin{tikzpicture}[tensornetwork, /tensor network/stripesize=6pt]
+        \node[ltensor, striped, label=below:{default}] (A1) at (0, 0) {};
+        \node[ctensor, /tensor network/stripe density=0.65, striped, /tensor network/stripe angle=135, pattern color=teal!70!black, label=below:{teal 135$^\circ$}] (A2) at (2.6, 0) {};
+        \node[shadedtensor, /tensor network/stripe density=0.6, striped, pattern color=red!70!black, label=below:{shade + stripes}] (A3) at (5.2, 0) {};
+        \draw (A1) -- (A2) -- (A3);
+    \end{tikzpicture}
+    .
+\end{equation}
+Additional pattern ideas with \texttt{patterns.meta}: change the line angle, switch to crosshatching, vary \verb+stripe density+, or overlay a pattern on a shaded tensor. The vertical and crosshatch examples below choose equal-width strokes and gaps (50\% density) with thicker lines so the pattern remains visible over shading.
+\begin{verbatim}
+\begin{tikzpicture}[tensornetwork, /tensor network/stripesize=10pt]
+  \node[ctensor,
+        /tensor network/stripe density=0.4,
+        striped,
+        pattern color=orange!80!black] (B1) at (0, 0) {};
+  \node[ctensor,
+        /tensor network/stripe density=0.7,
+        striped,
+        /tensor network/stripe angle=-45,
+        pattern color=cyan!70!black] (B2) at (2.6, 0) {};
+  \node[ctensor,
+        pattern={Lines[angle=90,distance=5pt]},
+        pattern color=purple!70!black,
+        /tensor network/tensor opacity=0.9] (B3) at (5.2, 0) {};
+  \node[shadedtensor,
+        pattern={Hatch[distance=5pt,line width=1.4pt]},
+        pattern color=gray!80!black] (B4) at (7.8, 0) {};
+  \draw (B1) -- (B2) -- (B3) -- (B4);
+\end{tikzpicture}
+\end{verbatim}
+\begin{equation}
+    \begin{tikzpicture}[tensornetwork, /tensor network/stripesize=10pt]
+        \node[ctensor, /tensor network/stripe density=0.4, striped, pattern color=orange!80!black, label=below:{0$^\circ$}] (B1) at (0, 0) {};
+        \node[ctensor, /tensor network/stripe density=0.7, striped, /tensor network/stripe angle=-45, pattern color=cyan!70!black, label=below:{-45$^\circ$}] (B2) at (2.6, 0) {};
+        \node[ctensor, pattern={Lines[angle=90,distance=5pt,line width=2.5pt]}, pattern color=purple!70!black, /tensor network/tensor opacity=0.9, label=below:{vertical}] (B3) at (5.2, 0) {};
+        \node[shadedtensor, pattern={Hatch[distance=5pt,line width=1.4pt]}, pattern color=gray!80!black, label=below:{crosshatch + shade}] (B4) at (7.8, 0) {};
+        \draw (B1) -- (B2) -- (B3) -- (B4);
     \end{tikzpicture}
     .
 \end{equation}

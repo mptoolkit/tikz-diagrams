@@ -6,6 +6,7 @@
 \RequirePackage{tikz}
 \usetikzlibrary{patterns,patterns.meta}
 \usetikzlibrary{shapes.geometric,shapes.misc}
+\usetikzlibrary{decorations.pathmorphing}
 
 % Default values
 \newcommand{\tn@defaulttensorsize}{10pt}
@@ -13,31 +14,40 @@
 \setlength{\tn@tensorsize}{\tn@defaulttensorsize}
 
 \newcommand{\tn@stripesize}{4pt}
+\newcommand{\tn@stripeangle}{0}
+\newcommand{\tn@stripedensity}{0.5}
+\newcommand{\tn@stripewidth}{2pt}
+\newcount\tn@stripecount
+\newcommand{\tn@stripename}{tnstripes0}
 \newcommand{\tn@baseline}{-0.25em}
 \newcommand{\tn@xscale}{0.75}
 \newcommand{\tn@yscale}{0.5}
 \newcommand{\tn@outerxsep}{2pt}
 \newcommand{\tn@outerysep}{5pt}
+\newcommand{\tn@tensorfill}{white}
+\newcommand{\tn@tensordraw}{black}
+\newcommand{\tn@tensortext}{black}
+\newcommand{\tn@tensoropacity}{1}
+\newcommand{\tn@shadetop}{white}
+\newcommand{\tn@shadebottom}{gray!30}
 
-% Define a striped pattern that respects the current stripe size.
+\newcommand{\tn@updatestripewidth}{\pgfmathsetlengthmacro{\tn@stripewidth}{\tn@stripedensity*\tn@stripesize}}
+
+% Define a striped pattern that respects the current stripe size and density.
 \newcommand{\tn@declarestripes}{%
-  \pgfdeclarepatternformonly{tn stripes}{\pgfpointorigin}{\pgfpoint{\tn@stripesize}{\tn@stripesize}}{\pgfpoint{\tn@stripesize}{\tn@stripesize}}{%
-    \pgfpathmoveto{\pgfpoint{0}{0}}%
-    \pgfpathlineto{\pgfpoint{\tn@stripesize}{\tn@stripesize}}%
-    \pgfpathlineto{\pgfpoint{\tn@stripesize}{0.5*\tn@stripesize}}%
-    \pgfpathlineto{\pgfpoint{0.5*\tn@stripesize}{0}}%
-    \pgfpathclose\pgfusepath{fill}%
-    \pgfpathmoveto{\pgfpoint{0}{0.5*\tn@stripesize}}%
-    \pgfpathlineto{\pgfpoint{0}{\tn@stripesize}}%
-    \pgfpathlineto{\pgfpoint{0.5*\tn@stripesize}{\tn@stripesize}}%
-    \pgfpathclose\pgfusepath{fill}%
+  \tn@updatestripewidth
+  \global\advance\tn@stripecount by 1\relax
+  \edef\tn@stripename{tnstripes\the\tn@stripecount}%
+  \pgfdeclarepatternformonly{\tn@stripename}{\pgfpointorigin}{\pgfpoint{\tn@stripesize}{\tn@stripesize}}{\pgfpoint{\tn@stripesize}{\tn@stripesize}}{%
+    \pgfpathrectangle{\pgfpoint{0}{0}}{\pgfpoint{\tn@stripewidth}{\tn@stripesize}}%
+    \pgfusepath{fill}%
   }%
 }
 
 % Style applicator so updated keys propagate to TikZ styles.
 \newcommand{\tn@applystyles}{%
   \tikzset{
-    tensor/.style={draw, inner sep=0, outer sep=0, minimum size=\tn@tensorsize},
+    tensor/.style={draw=\tn@tensordraw, inner sep=0, outer sep=0, minimum size=\tn@tensorsize, fill=\tn@tensorfill, text=\tn@tensortext, fill opacity=\tn@tensoropacity, draw opacity=\tn@tensoropacity},
     notensor/.style={inner sep=0, outer xsep=2pt, outer ysep=0, minimum size=\tn@tensorsize},
     atensor/.style={tensor, circle},
     ctensor/.style={tensor, circle},
@@ -47,7 +57,9 @@
     rtensor/.style={tensor, rounded rectangle, rounded rectangle right arc=none},
     etensor/.style={tensor, minimum height=(1cm/\tn@defaulttensorsize*0.5*2+1)*\tn@tensorsize},
     widetensor/.style args={##1}{tensor, minimum width=(1cm/\tn@defaulttensorsize*0.75*(##1-1)+1)*\tn@tensorsize},
-    striped/.style={pattern=tn stripes, pattern color=lightgray},
+    shadedtensor/.style={tensor, top color=\tn@shadetop, bottom color=\tn@shadebottom, draw opacity=1, fill opacity=1},
+    striped/.style={pattern={Lines[angle=\tn@stripeangle,distance=\tn@stripesize,line width=\tn@stripewidth]}, pattern color=lightgray},
+    wavy/.style={decorate, decoration={snake, amplitude=0.6mm, segment length=2mm}},
     tensornetwork/.style={baseline=\tn@baseline, xscale=\tn@xscale, yscale=\tn@yscale,
       every node/.style={inner sep=0, outer xsep=\tn@outerxsep, outer ysep=\tn@outerysep, text depth=0pt},
       execute at end picture={\path (current bounding box.south west) +(-2pt,0) (current bounding box.north east) +(2pt,0);} }
@@ -57,20 +69,37 @@
 % User-facing configuration interface.
 \pgfkeys{/tensor network/.is family, /tensor network,
   tensorsize/.code={\setlength{\tn@tensorsize}{#1}},
-  stripesize/.code={\def\tn@stripesize{#1}\tn@declarestripes},
+  stripesize/.code={\def\tn@stripesize{#1}\tn@updatestripewidth},
+  stripe angle/.code={\def\tn@stripeangle{#1}},
+  stripe density/.code={\def\tn@stripedensity{#1}\tn@updatestripewidth},
   baseline/.code={\def\tn@baseline{#1}},
   xscale/.code={\def\tn@xscale{#1}},
   yscale/.code={\def\tn@yscale{#1}},
   outer xsep/.code={\def\tn@outerxsep{#1}},
   outer ysep/.code={\def\tn@outerysep{#1}},
+  tensor fill/.code={\def\tn@tensorfill{#1}},
+  tensor draw/.code={\def\tn@tensordraw{#1}},
+  tensor text/.code={\def\tn@tensortext{#1}},
+  tensor opacity/.code={\def\tn@tensoropacity{#1}},
+  shade top/.code={\def\tn@shadetop{#1}},
+  shade bottom/.code={\def\tn@shadebottom{#1}},
   initialize/.code={%
     \setlength{\tn@tensorsize}{\tn@defaulttensorsize}%
     \def\tn@stripesize{4pt}%
+    \def\tn@stripeangle{0}%
+    \def\tn@stripedensity{0.5}%
+    \tn@updatestripewidth
     \def\tn@baseline{-0.25em}%
     \def\tn@xscale{0.75}%
     \def\tn@yscale{0.5}%
     \def\tn@outerxsep{2pt}%
     \def\tn@outerysep{5pt}%
+    \def\tn@tensorfill{white}%
+    \def\tn@tensordraw{black}%
+    \def\tn@tensortext{black}%
+    \def\tn@tensoropacity{1}%
+    \def\tn@shadetop{white}%
+    \def\tn@shadebottom{gray!30}%
     \tn@declarestripes
   }
 }
