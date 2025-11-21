@@ -1,0 +1,88 @@
+%% tensor-network.sty -- TikZ helpers for tensor network diagrams
+%% Provides styles and customization helpers for drawing tensor network diagrams.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tensor-network}[2024/06/14 Tensor network TikZ helpers]
+
+\RequirePackage{tikz}
+\usetikzlibrary{patterns,patterns.meta}
+\usetikzlibrary{shapes.geometric,shapes.misc}
+
+% Default values
+\newcommand{\tn@defaulttensorsize}{10pt}
+\newlength{\tn@tensorsize}
+\setlength{\tn@tensorsize}{\tn@defaulttensorsize}
+
+\newcommand{\tn@stripesize}{4pt}
+\newcommand{\tn@baseline}{-0.25em}
+\newcommand{\tn@xscale}{0.75}
+\newcommand{\tn@yscale}{0.5}
+\newcommand{\tn@outerxsep}{2pt}
+\newcommand{\tn@outerysep}{5pt}
+
+% Define a striped pattern that respects the current stripe size.
+\newcommand{\tn@declarestripes}{%
+  \pgfdeclarepatternformonly{tn stripes}{\pgfpointorigin}{\pgfpoint{\tn@stripesize}{\tn@stripesize}}{\pgfpoint{\tn@stripesize}{\tn@stripesize}}{%
+    \pgfpathmoveto{\pgfpoint{0}{0}}%
+    \pgfpathlineto{\pgfpoint{\tn@stripesize}{\tn@stripesize}}%
+    \pgfpathlineto{\pgfpoint{\tn@stripesize}{0.5*\tn@stripesize}}%
+    \pgfpathlineto{\pgfpoint{0.5*\tn@stripesize}{0}}%
+    \pgfpathclose\pgfusepath{fill}%
+    \pgfpathmoveto{\pgfpoint{0}{0.5*\tn@stripesize}}%
+    \pgfpathlineto{\pgfpoint{0}{\tn@stripesize}}%
+    \pgfpathlineto{\pgfpoint{0.5*\tn@stripesize}{\tn@stripesize}}%
+    \pgfpathclose\pgfusepath{fill}%
+  }%
+}
+
+% Style applicator so updated keys propagate to TikZ styles.
+\newcommand{\tn@applystyles}{%
+  \tikzset{
+    tensor/.style={draw, inner sep=0, outer sep=0, minimum size=\tn@tensorsize},
+    notensor/.style={inner sep=0, outer xsep=2pt, outer ysep=0, minimum size=\tn@tensorsize},
+    atensor/.style={tensor, circle},
+    ctensor/.style={tensor, circle},
+    dtensor/.style={tensor, diamond},
+    wtensor/.style={tensor},
+    ltensor/.style={tensor, rounded rectangle, rounded rectangle left arc=none},
+    rtensor/.style={tensor, rounded rectangle, rounded rectangle right arc=none},
+    etensor/.style={tensor, minimum height=(1cm/\tn@defaulttensorsize*0.5*2+1)*\tn@tensorsize},
+    widetensor/.style args={##1}{tensor, minimum width=(1cm/\tn@defaulttensorsize*0.75*(##1-1)+1)*\tn@tensorsize},
+    striped/.style={pattern=tn stripes, pattern color=lightgray},
+    tensornetwork/.style={baseline=\tn@baseline, xscale=\tn@xscale, yscale=\tn@yscale,
+      every node/.style={inner sep=0, outer xsep=\tn@outerxsep, outer ysep=\tn@outerysep, text depth=0pt},
+      execute at end picture={\path (current bounding box.south west) +(-2pt,0) (current bounding box.north east) +(2pt,0);} }
+  }
+}
+
+% User-facing configuration interface.
+\pgfkeys{/tensor network/.is family, /tensor network,
+  tensorsize/.code={\setlength{\tn@tensorsize}{#1}},
+  stripesize/.code={\def\tn@stripesize{#1}\tn@declarestripes},
+  baseline/.code={\def\tn@baseline{#1}},
+  xscale/.code={\def\tn@xscale{#1}},
+  yscale/.code={\def\tn@yscale{#1}},
+  outer xsep/.code={\def\tn@outerxsep{#1}},
+  outer ysep/.code={\def\tn@outerysep{#1}},
+  initialize/.code={%
+    \setlength{\tn@tensorsize}{\tn@defaulttensorsize}%
+    \def\tn@stripesize{4pt}%
+    \def\tn@baseline{-0.25em}%
+    \def\tn@xscale{0.75}%
+    \def\tn@yscale{0.5}%
+    \def\tn@outerxsep{2pt}%
+    \def\tn@outerysep{5pt}%
+    \tn@declarestripes
+  }
+}
+
+\newcommand{\tnsetup}[1]{\pgfkeys{/tensor network,#1}\tn@applystyles}
+
+% Initialize defaults on package load.
+\tnsetup{initialize}
+\tn@applystyles
+
+% Deprecated triangle-based styles retained for completeness (commented out to avoid clashes).
+%% \tikzset{
+%%   ltensor/.style={tensor, isosceles triangle, shape border rotate=0, isosceles triangle apex angle=60},
+%%   rtensor/.style={tensor, isosceles triangle, shape border rotate=180, isosceles triangle apex angle=60}
+%% }
